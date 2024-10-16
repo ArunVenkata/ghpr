@@ -101,7 +101,7 @@ git push origin feature/new-feature
 
 
 
-🎉 License
+## 🎉 License
 
 This project is licensed under the MIT License. See the [LICENSE](https://www.github.com/ArunVenkata/ghpr/blob/master/LICENSE) file for details.
 
