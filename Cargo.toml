@@ -1,0 +1,21 @@
+[package]
+name = "ghpr"
+version = "0.1.0"
+edition = "2021"
+readme = "Readme.md"
+homepage = "https://www.github.com/ArunVenkata/ghpr"
+repository = "https://www.github.com/ArunVenkata/ghpr"
+license = "MIT"
+description = "Generates GitHub pull request URLs"
+
+
+[dependencies]
+clap = { version = "4.0", features = ["derive"] }
+config = "0.13"
+git2 = "0.19"
+percent-encoding = "2.3.1"
+
+
+[dev-dependencies]
+assert_cmd = "2.0"
+predicates = "2.0"
