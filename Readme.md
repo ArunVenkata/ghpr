@@ -40,7 +40,14 @@ Generated URL: https://github.com/ArunVenkata/ghpr/compare/feature-branch...mast
 
 ## 📦 Installation Instructions
 
-To get started with the GitHub PR URL Generator, follow these simple steps:
+1. Ensure you have [Rust](https://www.rust-lang.org/tools/install) installed on your machine.
+
+2. Run the following command 
+```bash
+cargo install ghpr
+```
+
+## 🖥️ Install from Source
 
 1. Clone the repository:
 ```bash
