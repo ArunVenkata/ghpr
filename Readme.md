@@ -28,8 +28,9 @@ ghpr --src feature-branch --title "Add new feature"
 ```ini
 [defaults]
 dest="master"
+repo="ArunVenkata/ghpr"
 ```
-Generated URL: https://github.com//compare/feature-branch...master?quick_pull=1&title=Add%20new%20feature
+Generated URL: https://github.com/ArunVenkata/ghpr/compare/feature-branch...master?quick_pull=1&title=Add%20new%20feature
 
 ## 📦 Installation Instructions
 

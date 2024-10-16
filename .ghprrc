@@ -1,2 +1,3 @@
 [defaults]
-dest="ArunVenkata/ghpr"
+dest="master"
+repo="ArunVenkata/ghpr"
