@@ -4,6 +4,12 @@ Welcome to the **GitHub PR URL Generator**! This command-line tool simplifies th
 
 To create a PR quickly, run the command and click the generated link.
 
+
+
+[](https://github.com/user-attachments/assets/50ccbc19-e587-4820-9e7a-d02704d99add)
+
+
+
 ## 🚀 Examples of Usage
 
 Here are some examples of how to use the `ghpr` command:
