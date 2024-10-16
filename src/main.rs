@@ -140,7 +140,7 @@ fn main() {
 
     let mut url = format!(
         "https://github.com/{}/compare/{}...{}?quick_pull=1",
-        repo, src, dest
+        repo, dest, src
     );
 
     if !title.is_empty() {
@@ -211,7 +211,6 @@ fn read_config(file_path: &str) -> Option<RcFile> {
 }
 
 fn get_current_branch_name() -> Option<String> {
-
     match Repository::discover(".") {
         Ok(repo) => {
             // try to get the head reference
@@ -222,8 +221,7 @@ fn get_current_branch_name() -> Option<String> {
                     } else {
                     }
                 }
-                Err(_e) => {
-                }
+                Err(_e) => {}
             }
 
             let head_path = repo.path().join("HEAD");
