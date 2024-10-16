@@ -21,6 +21,7 @@ Generate a pull request URL using values from a .ghprrc file (dest is picked up 
 "###;
 
 const AUTHOR: &str = "Arun V <arunvv.dev@gmail.com>";
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 struct Defaults {
     values: HashMap<String, String>,
@@ -32,7 +33,7 @@ struct RcFile {
 
 fn main() {
     let matches = Command::new("PR URL Generator")
-        .version("1.0")
+        .version(VERSION)
         .author(AUTHOR)
         .about(ABOUT)
         .override_usage(USAGE)

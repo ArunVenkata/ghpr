@@ -7,7 +7,9 @@ homepage = "https://www.github.com/ArunVenkata/ghpr"
 repository = "https://www.github.com/ArunVenkata/ghpr"
 license = "MIT"
 description = "Generates GitHub pull request URLs"
-
+exclude = [
+    "tests/*"
+]
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
