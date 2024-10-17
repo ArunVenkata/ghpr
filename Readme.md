@@ -74,7 +74,7 @@ The .ghprrc file allows you to set default values for various parameters used in
 ```ini
 [defaults]
 repo = "owner/repo"
-src = "feature-branch
+src = "feature-branch"
 dest = "main"
 title = "Your PR Title"
 body = "Description of the pull request."
