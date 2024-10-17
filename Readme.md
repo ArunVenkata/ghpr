@@ -1,4 +1,4 @@
-# 🦀 GitHub PR URL Generator
+# 🦀 Github PR URL Generator
 
 Welcome to the **GitHub PR URL Generator**! This command-line tool simplifies the creation of pull request for your GitHub repositories.
 
