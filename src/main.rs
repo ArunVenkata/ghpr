@@ -1,37 +1,11 @@
+mod utils;
+mod model_types;
+mod consts;
+use consts::{ABOUT, AUTHOR, USAGE, VERSION};
 use clap::{Arg, Command};
-use config::{Config, File, FileFormat};
-use git2::Repository;
+use utils::{get_config_value, get_current_branch_name, read_config};
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
-use std::{collections::HashMap, fs};
 use webbrowser;
-
-
-const ABOUT: &str = r###"
-
-Generates GitHub pull request URLs"###;
-
-const USAGE: &str = r###"
-
-Generate a pull request URL with a specified repository, source branch, and destination branch:
->> ghpr --repo owner/repo --src my-feature-branch --dest main
-
-Generate a pull request URL with additional parameters like title and body:
->> ghpr --repo owner/repo --src main --dest feature-branch --title "Fix bug" --body "This PR fixes the bug."
-
-Generate a pull request URL using values from a .ghprrc file (dest is picked up from the .ghprrc file):
->> ghpr --src feature-branch --title "Add new feature"
-"###;
-
-const AUTHOR: &str = "Arun V <arunvv.dev@gmail.com>";
-const VERSION: &str = env!("CARGO_PKG_VERSION");
-
-struct Defaults {
-    values: HashMap<String, String>,
-}
-
-struct RcFile {
-    defaults: Option<Defaults>,
-}
 
 fn main() {
     let matches = Command::new("PR URL Generator")
@@ -128,8 +102,9 @@ fn main() {
                 .long("open")
                 .help("Open the generated URL in the default browser")
                 .num_args(0)
-        ) // Add this block to define the -o flag
+        )
         .get_matches();
+    
     let config = read_config(".ghprrc");
 
     let repo: String = get_config_value(&matches, config.as_ref(), "repo");
@@ -182,77 +157,5 @@ fn main() {
         println!("Opened the URL in the default browser: {}", url);
     } else if !open_in_browser{
         println!("Click on this link to generate your PR: {}", url);
-    }
-}
-
-fn get_config_value<'a>(matches: &clap::ArgMatches, config: Option<&RcFile>, key: &str) -> String {
-    // Check matches first
-    let value_from_matches: Option<&str> =
-        matches.get_one::<String>(key).map(|s: &String| s.as_str());
-
-    // If no value found, check the config
-    let value_from_config: Option<&str> = config.and_then(|cfg: &RcFile| {
-        cfg.defaults
-            .as_ref()
-            .and_then(|d: &Defaults| d.values.get(key))
-            .map(|s: &String| s.as_str())
-    });
-
-    // Combine both options
-    value_from_matches
-        .or(value_from_config)
-        .map(|s: &str| s.to_string())
-        .unwrap_or_else(|| {
-            String::new() // or provide a default string if needed
-        })
-}
-
-fn read_config(file_path: &str) -> Option<RcFile> {
-    let builder: config::ConfigBuilder<config::builder::DefaultState> =
-        Config::builder().add_source(File::new(file_path, FileFormat::Ini));
-
-    match builder.build() {
-        Ok(config) => {
-            let defaults: Option<HashMap<String, String>> = config.get("defaults").ok();
-            let defaults: Option<Defaults> =
-                defaults.map(|values: HashMap<String, String>| Defaults { values });
-
-            Some(RcFile { defaults })
-        }
-        Err(_e) => {
-            // eprintln!("Error reading config: {}", e);
-            None
-        }
-    }
-}
-
-fn get_current_branch_name() -> Option<String> {
-    match Repository::discover(".") {
-        Ok(repo) => {
-            // try to get the head reference
-            match repo.head() {
-                Ok(head) => {
-                    if let Some(branch) = head.shorthand() {
-                        return Some(branch.to_string());
-                    } else {
-                    }
-                }
-                Err(_e) => {}
-            }
-
-            let head_path = repo.path().join("HEAD");
-
-            if let Ok(head_content) = fs::read_to_string(head_path) {
-                if head_content.starts_with("ref: refs/heads/") {
-                    let branch_name = head_content
-                        .trim_start_matches("ref: refs/heads/")
-                        .trim()
-                        .to_string();
-                    return Some(branch_name);
-                }
-            }
-            None
-        }
-        Err(_e) => None,
     }
 }
