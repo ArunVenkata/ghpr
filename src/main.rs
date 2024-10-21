@@ -192,9 +192,11 @@ fn main() {
 }
 
 fn get_config_value<'a>(matches: &clap::ArgMatches, config: Option<&RcFile>, key: &str) -> String {
+    // Check matches first
     let value_from_matches: Option<&str> =
         matches.get_one::<String>(key).map(|s: &String| s.as_str());
 
+    // If no value found, check the config
     let value_from_config: Option<&str> = config.and_then(|cfg: &RcFile| {
         cfg.defaults
             .as_ref()
@@ -202,10 +204,13 @@ fn get_config_value<'a>(matches: &clap::ArgMatches, config: Option<&RcFile>, key
             .map(|s: &String| s.as_str())
     });
 
+    // Combine both options
     value_from_matches
         .or(value_from_config)
         .map(|s: &str| s.to_string())
-        .unwrap_or_else(|| String::new())
+        .unwrap_or_else(|| {
+            String::new() // or provide a default string if needed
+        })
 }
 
 fn read_config(file_path: &str) -> Option<RcFile> {
@@ -220,17 +225,22 @@ fn read_config(file_path: &str) -> Option<RcFile> {
 
             Some(RcFile { defaults })
         }
-        Err(_e) => None,
+        Err(_e) => {
+            // eprintln!("Error reading config: {}", e);
+            None
+        }
     }
 }
 
 fn get_current_branch_name() -> Option<String> {
     match Repository::discover(".") {
         Ok(repo) => {
+            // try to get the head reference
             match repo.head() {
                 Ok(head) => {
                     if let Some(branch) = head.shorthand() {
                         return Some(branch.to_string());
+                    } else {
                     }
                 }
                 Err(_e) => {}
