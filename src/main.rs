@@ -3,7 +3,8 @@ use config::{Config, File, FileFormat};
 use git2::Repository;
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use std::{collections::HashMap, fs};
-use webbrowser; // Add this import for opening URLs in the default browser
+use webbrowser;
+
 
 const ABOUT: &str = r###"
 
@@ -126,11 +127,9 @@ fn main() {
                 .short('o')
                 .long("open")
                 .help("Open the generated URL in the default browser")
-                .required(false)
-                .takes_value(false),
+                .num_args(0)
         ) // Add this block to define the -o flag
         .get_matches();
-
     let config = read_config(".ghprrc");
 
     let repo: String = get_config_value(&matches, config.as_ref(), "repo");
@@ -143,7 +142,9 @@ fn main() {
     let assignees: String = get_config_value(&matches, config.as_ref(), "assignees");
     let projects: String = get_config_value(&matches, config.as_ref(), "projects");
     let template: String = get_config_value(&matches, config.as_ref(), "template");
-
+    let open_in_browser: bool = matches.get_flag("open");
+    
+    
     if src.is_empty() {
         src = get_current_branch_name().unwrap_or_else(|| String::new());
     }
@@ -177,16 +178,9 @@ fn main() {
         url.push_str(&format!("&template={}", template));
     }
 
-    // Check if -o flag is specified and open the URL in the default browser
-    let open_in_browser = matches.is_present("open");
-
-    if open_in_browser {
-        if webbrowser::open(&url).is_ok() {
-            println!("Opened the URL in the default browser: {}", url);
-        } else {
-            eprintln!("Failed to open the URL in the browser. Here is the link: {}", url);
-        }
-    } else {
+    if open_in_browser && webbrowser::open(&url).is_ok() {
+        println!("Opened the URL in the default browser: {}", url);
+    } else if !open_in_browser{
         println!("Click on this link to generate your PR: {}", url);
     }
 }
