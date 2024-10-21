@@ -3,6 +3,7 @@ use config::{Config, File, FileFormat};
 use git2::Repository;
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use std::{collections::HashMap, fs};
+use webbrowser; // Add this import for opening URLs in the default browser
 
 const ABOUT: &str = r###"
 
@@ -120,6 +121,14 @@ fn main() {
                 .help("The template for the pull request")
                 .num_args(1),
         )
+        .arg(
+            Arg::new("open")
+                .short('o')
+                .long("open")
+                .help("Open the generated URL in the default browser")
+                .required(false)
+                .takes_value(false),
+        ) // Add this block to define the -o flag
         .get_matches();
 
     let config = read_config(".ghprrc");
@@ -167,15 +176,25 @@ fn main() {
     if !template.is_empty() {
         url.push_str(&format!("&template={}", template));
     }
-    println!("Click on this link to generate your PR {}", url);
+
+    // Check if -o flag is specified and open the URL in the default browser
+    let open_in_browser = matches.is_present("open");
+
+    if open_in_browser {
+        if webbrowser::open(&url).is_ok() {
+            println!("Opened the URL in the default browser: {}", url);
+        } else {
+            eprintln!("Failed to open the URL in the browser. Here is the link: {}", url);
+        }
+    } else {
+        println!("Click on this link to generate your PR: {}", url);
+    }
 }
 
 fn get_config_value<'a>(matches: &clap::ArgMatches, config: Option<&RcFile>, key: &str) -> String {
-    // Check matches first
     let value_from_matches: Option<&str> =
         matches.get_one::<String>(key).map(|s: &String| s.as_str());
 
-    // If no value found, check the config
     let value_from_config: Option<&str> = config.and_then(|cfg: &RcFile| {
         cfg.defaults
             .as_ref()
@@ -183,13 +202,10 @@ fn get_config_value<'a>(matches: &clap::ArgMatches, config: Option<&RcFile>, key
             .map(|s: &String| s.as_str())
     });
 
-    // Combine both options
     value_from_matches
         .or(value_from_config)
         .map(|s: &str| s.to_string())
-        .unwrap_or_else(|| {
-            String::new() // or provide a default string if needed
-        })
+        .unwrap_or_else(|| String::new())
 }
 
 fn read_config(file_path: &str) -> Option<RcFile> {
@@ -204,22 +220,17 @@ fn read_config(file_path: &str) -> Option<RcFile> {
 
             Some(RcFile { defaults })
         }
-        Err(_e) => {
-            // eprintln!("Error reading config: {}", e);
-            None
-        }
+        Err(_e) => None,
     }
 }
 
 fn get_current_branch_name() -> Option<String> {
     match Repository::discover(".") {
         Ok(repo) => {
-            // try to get the head reference
             match repo.head() {
                 Ok(head) => {
                     if let Some(branch) = head.shorthand() {
                         return Some(branch.to_string());
-                    } else {
                     }
                 }
                 Err(_e) => {}
