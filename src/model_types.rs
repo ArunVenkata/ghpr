@@ -1,10 +1,9 @@
 use std::collections::HashMap;
 
-
-pub(crate) struct Defaults {
+pub struct Defaults {
     pub values: HashMap<String, String>,
 }
 
-pub(crate) struct RcFile {
+pub struct RcFile {
     pub defaults: Option<Defaults>,
 }
