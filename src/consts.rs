@@ -16,4 +16,5 @@ Generate a pull request URL using values from a .ghprrc file (dest is picked up 
 
 pub const AUTHOR: &str = "Arun V <arunvv.dev@gmail.com>";
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-
+pub const CONFIG_FILE_PATH: &str = ".ghprrc";
+pub const COMMAND_NAME: &str = "PR URL Generator";
